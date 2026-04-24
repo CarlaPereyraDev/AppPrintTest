@@ -6,7 +6,6 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  # Ruta al archivo de solución que veo en tu imagen
   solutionPath: 'appImprimir.sln' 
 
 steps:
@@ -18,7 +17,7 @@ steps:
     jdkArchitectureOption: 'x64'
     jdkSourceOption: 'PreInstalled'
 
-# 2. Preparación del análisis
+# 2. Preparación del análisis (Limpio)
 - task: SonarQubePrepare@6
   displayName: 'Preparar SonarQube'
   inputs:
@@ -26,9 +25,6 @@ steps:
     scannerMode: 'MSBuild'
     projectKey: 'AppImprimir'
     projectName: 'PrintApp'
-    # Las siguientes líneas ya NO son comentarios, ahora sí se ejecutarán
-    extraProperties: |
-      sonar.branch.name=
 
 # 3. Restaurar paquetes NuGet
 - task: DotNetCoreCLI@2
@@ -37,7 +33,7 @@ steps:
     command: 'restore'
     projects: '$(solutionPath)'
 
-# 4. Compilación (Aquí SonarQube empieza a recolectar datos)
+# 4. Compilación
 - task: DotNetCoreCLI@2
   displayName: 'Build'
   inputs:
@@ -49,7 +45,7 @@ steps:
 - task: SonarQubeAnalyze@6
   displayName: 'Run Code Analysis'
 
-# 6. Enviar resultados a tu servidor Linux
+# 6. Enviar resultados al servidor
 - task: SonarQubePublish@6
   displayName: 'Publish Quality Gate Result'
   inputs:
