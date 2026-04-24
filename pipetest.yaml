@@ -24,8 +24,8 @@ steps:
   inputs:
     SonarQube: 'SonarqubeConnectionTest'
     scannerMode: 'MSBuild'
-    projectKey: 'AppImprimir_Project'
-    projectName: 'Sistema de Impresión - WebApp'
+    projectKey: 'AppImprimir'
+    projectName: 'PrintApp'
     #Evitar el error de branches
     extraProperties: |
       sonar.branch.name=
