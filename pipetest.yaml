@@ -24,8 +24,11 @@ steps:
   inputs:
     SonarQube: 'SonarqubeConnectionTest'
     scannerMode: 'MSBuild'
-    projectKey: 'AppImprimirProject'
-    projectName: 'PrintApp'
+    projectKey: 'AppImprimir_Project'
+    projectName: 'Sistema de Impresión - WebApp'
+    #Evitar error de branches
+    extraProperties: |
+      sonar.branch.name=
 
 # 3. Restaurar paquetes NuGet
 - task: DotNetCoreCLI@2
