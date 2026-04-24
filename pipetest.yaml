@@ -26,9 +26,9 @@ steps:
     scannerMode: 'MSBuild'
     projectKey: 'AppImprimir'
     projectName: 'PrintApp'
-    #Evitar el error de branches
-    #extraProperties: |
-      #sonar.branch.name=
+    # Las siguientes líneas ya NO son comentarios, ahora sí se ejecutarán
+    extraProperties: |
+      sonar.branch.name=
 
 # 3. Restaurar paquetes NuGet
 - task: DotNetCoreCLI@2
