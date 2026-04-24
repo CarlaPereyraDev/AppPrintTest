@@ -27,8 +27,8 @@ steps:
     projectKey: 'AppImprimir'
     projectName: 'PrintApp'
     #Evitar el error de branches
-    extraProperties: |
-      sonar.branch.name=
+    #extraProperties: |
+      #sonar.branch.name=
 
 # 3. Restaurar paquetes NuGet
 - task: DotNetCoreCLI@2
