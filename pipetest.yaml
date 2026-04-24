@@ -26,7 +26,7 @@ steps:
     scannerMode: 'MSBuild'
     projectKey: 'AppImprimir_Project'
     projectName: 'Sistema de Impresión - WebApp'
-    #Evitar error de branches
+    #Evitar el error de branches
     extraProperties: |
       sonar.branch.name=
 
