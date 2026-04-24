@@ -1,0 +1,53 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  buildConfiguration: 'Release'
+  # Ruta al archivo de solución que veo en tu imagen
+  solutionPath: 'appImprimir.sln' 
+
+steps:
+# 1. SDK de Java necesario para el scanner
+- task: JavaToolInstaller@0
+  displayName: 'Instalar Java 17'
+  inputs:
+    versionSpec: '17'
+    jdkArchitectureOption: 'x64'
+    jdkSourceOption: 'PreInstalled'
+
+# 2. Preparación del análisis
+- task: SonarQubePrepare@6
+  displayName: 'Preparar SonarQube'
+  inputs:
+    SonarQube: 'SonarqubeConnectionTest'
+    scannerMode: 'MSBuild'
+    projectKey: 'AppImprimirProject'
+    projectName: 'PrintApp'
+
+# 3. Restaurar paquetes NuGet
+- task: DotNetCoreCLI@2
+  displayName: 'Restore'
+  inputs:
+    command: 'restore'
+    projects: '$(solutionPath)'
+
+# 4. Compilación (Aquí SonarQube empieza a recolectar datos)
+- task: DotNetCoreCLI@2
+  displayName: 'Build'
+  inputs:
+    command: 'build'
+    projects: '$(solutionPath)'
+    arguments: '--configuration $(buildConfiguration)'
+
+# 5. Ejecutar el motor de análisis
+- task: SonarQubeAnalyze@6
+  displayName: 'Run Code Analysis'
+
+# 6. Enviar resultados a tu servidor Linux
+- task: SonarQubePublish@6
+  displayName: 'Publish Quality Gate Result'
+  inputs:
+    pollingTimeoutSec: '300'
