@@ -25,8 +25,7 @@ steps:
     scannerMode: 'MSBuild'
     projectKey: 'AppImprimir'
     projectName: 'PrintApp'
-    extraProperties: |
-      sonar.branch.name=main
+    extraProperties: sonar.branch.name=main
 
 # 3. Restaurar paquetes NuGet
 - task: DotNetCoreCLI@2
