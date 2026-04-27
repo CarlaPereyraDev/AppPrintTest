@@ -9,33 +9,26 @@ variables:
   solutionPath: 'appImprimir.sln'
 
 steps:
-# 1. Instalar el SDK de .NET (Asegúrate de usar la versión de tu proyecto)
+# 1. Forzar la versión correcta de .NET
 - task: UseDotNet@2
+  displayName: 'Instalar SDK de .NET'
   inputs:
     packageType: 'sdk'
-    version: '8.x' # Cambia a 6.x o 7.x si es necesario
+    version: '8.x' # Si el proyecto es más viejo, prueba con '6.x'
 
-# 2. Restaurar dependencias
+# 2. Restore con Verbosity para ver qué falla exactamente
 - task: DotNetCoreCLI@2
-  displayName: 'Restore'
+  displayName: 'Restore de paquetes'
   inputs:
     command: 'restore'
     projects: '$(solutionPath)'
+    feedsToUse: 'select' # Usa los feeds estándar de NuGet
 
-# 3. Compilación con Análisis de Roslyn
-# Los errores y advertencias aparecerán en la pestaña "Issues" de la Pipeline
+# 3. Compilación con análisis de Roslyn
 - task: DotNetCoreCLI@2
-  displayName: 'Build & Analyze'
+  displayName: 'Build y Análisis Roslyn'
   inputs:
     command: 'build'
     projects: '$(solutionPath)'
-    # Esto genera un archivo con los resultados del análisis
-    arguments: '--configuration $(buildConfiguration) /warnaserror:false' 
-
-# 4. (Opcional) Publicar resultados como artefactos si quieres descargarlos después
-- task: PublishBuildArtifacts@1
-  displayName: 'Publicar logs de compilación'
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'AnalysisLogs'
-    publishLocation: 'Container'
+    # Activamos los analizadores y evitamos que falle por simples warnings
+    arguments: '--configuration $(buildConfiguration) /p:EnableNETAnalyzers=true /p:AnalysisMode=All'
