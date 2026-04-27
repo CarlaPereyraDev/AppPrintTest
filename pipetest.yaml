@@ -6,29 +6,29 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  solutionPath: 'appImprimir.sln'
+  # Asegúrate de que este nombre coincida con el .sln que vimos en tu repo
+  solutionPath: 'appImprimir.sln' 
 
 steps:
-# 1. Forzar la versión correcta de .NET
+# 1. Instalar el SDK específico (net6.0)
 - task: UseDotNet@2
-  displayName: 'Instalar SDK de .NET'
+  displayName: 'Instalar SDK .NET 6.0'
   inputs:
     packageType: 'sdk'
     version: '6.x'
 
-# 2. Restore con Verbosity para ver qué falla exactamente
+# 2. Restaurar paquetes (Ahora con la versión correcta del SDK)
 - task: DotNetCoreCLI@2
-  displayName: 'Restore de paquetes'
+  displayName: 'Restore de dependencias'
   inputs:
     command: 'restore'
     projects: '$(solutionPath)'
-    feedsToUse: 'select' # Usa los feeds estándar de NuGet
 
-# 3. Compilación con análisis de Roslyn
+# 3. Compilación y Análisis Estático
+# Aquí es donde Roslyn revisará tu código basándose en el .csproj
 - task: DotNetCoreCLI@2
-  displayName: 'Build y Análisis Roslyn'
+  displayName: 'Build y Análisis de Código'
   inputs:
     command: 'build'
     projects: '$(solutionPath)'
-    # Activamos los analizadores y evitamos que falle por simples warnings
-    arguments: '--configuration $(buildConfiguration) /p:EnableNETAnalyzers=true /p:AnalysisMode=All'
+    arguments: '--configuration $(buildConfiguration)'
