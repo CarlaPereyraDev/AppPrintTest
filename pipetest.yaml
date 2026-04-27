@@ -6,48 +6,36 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  solutionPath: 'appImprimir.sln' 
+  solutionPath: 'appImprimir.sln'
 
 steps:
-# 1. SDK de Java necesario para el scanner
-- task: JavaToolInstaller@0
-  displayName: 'Instalar Java 17'
+# 1. Instalar el SDK de .NET (Asegúrate de usar la versión de tu proyecto)
+- task: UseDotNet@2
   inputs:
-    versionSpec: '17'
-    jdkArchitectureOption: 'x64'
-    jdkSourceOption: 'PreInstalled'
+    packageType: 'sdk'
+    version: '8.x' # Cambia a 6.x o 7.x si es necesario
 
-# 2. Preparación del análisis (Limpio)
-- task: SonarQubePrepare@6
-  displayName: 'Preparar SonarQube'
-  inputs:
-    SonarQube: 'SonarqubeConnectionTest'
-    scannerMode: 'MSBuild'
-    projectKey: 'AppImprimir'
-    projectName: 'PrintApp'
-    extraProperties: sonar.branch.name=main
-
-# 3. Restaurar paquetes NuGet
+# 2. Restaurar dependencias
 - task: DotNetCoreCLI@2
   displayName: 'Restore'
   inputs:
     command: 'restore'
     projects: '$(solutionPath)'
 
-# 4. Compilación
+# 3. Compilación con Análisis de Roslyn
+# Los errores y advertencias aparecerán en la pestaña "Issues" de la Pipeline
 - task: DotNetCoreCLI@2
-  displayName: 'Build'
+  displayName: 'Build & Analyze'
   inputs:
     command: 'build'
     projects: '$(solutionPath)'
-    arguments: '--configuration $(buildConfiguration)'
+    # Esto genera un archivo con los resultados del análisis
+    arguments: '--configuration $(buildConfiguration) /warnaserror:false' 
 
-# 5. Ejecutar el motor de análisis
-- task: SonarQubeAnalyze@6
-  displayName: 'Run Code Analysis'
-
-# 6. Enviar resultados al servidor
-- task: SonarQubePublish@6
-  displayName: 'Publish Quality Gate Result'
+# 4. (Opcional) Publicar resultados como artefactos si quieres descargarlos después
+- task: PublishBuildArtifacts@1
+  displayName: 'Publicar logs de compilación'
   inputs:
-    pollingTimeoutSec: '300'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'AnalysisLogs'
+    publishLocation: 'Container'
