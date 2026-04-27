@@ -14,7 +14,7 @@ steps:
   displayName: 'Instalar SDK de .NET'
   inputs:
     packageType: 'sdk'
-    version: '8.x' # Si el proyecto es más viejo, prueba con '6.x'
+    version: '6.x'
 
 # 2. Restore con Verbosity para ver qué falla exactamente
 - task: DotNetCoreCLI@2
